@@ -1,9 +1,13 @@
 package ait.lesson10.shop_javapro.service;
 
+import ait.lesson10.shop_javapro.model.dto.CustomerDTO;
+import ait.lesson10.shop_javapro.model.entity.Cart;
 import ait.lesson10.shop_javapro.model.entity.Customer;
 import ait.lesson10.shop_javapro.repository.CustomerRepository;
 import ait.lesson10.shop_javapro.service.interfaces.CustomerService;
+import ait.lesson10.shop_javapro.service.mapping.CustomerMappingService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -11,48 +15,58 @@ import java.util.List;
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
-    public CustomerServiceImpl(CustomerRepository customerRepository) {
+    private final CustomerMappingService mappingService;
+    public CustomerServiceImpl(CustomerRepository customerRepository, CustomerMappingService mappingService) {
         this.customerRepository = customerRepository;
+        this.mappingService = mappingService;
     }
 
 
     @Override
-    public Customer save(Customer customer) {
-        if(customer!=null){
-            customer.setActive(true);
-            customerRepository.save(customer);
-            return customer;
+    @Transactional
+    public CustomerDTO save(CustomerDTO customerDTO) {
+        if(customerDTO!=null){
+            Customer customer = mappingService.mapDtoToEntity(customerDTO);
+            Cart cart = new Cart();
+            cart.setCustomer(customer);
+            customer.setCart(cart);
+
+
+            return mappingService.mapEntityToDto(customerRepository.save(customer));
         }
         return null;
     }
 
     @Override
-    public Customer findById(Long id) {
+    public CustomerDTO findById(Long id) {
         if(customerRepository.findById(id).isPresent()){
-            return customerRepository.findById(id).get();
+            return mappingService.mapEntityToDto(customerRepository.findById(id).get());
         }
         return null;
     }
 
     @Override
-    public Customer update(Customer customer) {
-        return null;
+    public CustomerDTO update(CustomerDTO customerDTO) {
+        Customer customer = mappingService.mapDtoToEntity(customerDTO);
+        customer.setActive(true);
+
+        return mappingService.mapEntityToDto(customerRepository.save(customer));
     }
 
     @Override
-    public Customer delete(Long id) {
+    public CustomerDTO delete(Long id) {
         if(id!=null&&id>0&&customerRepository.findById(id).isPresent()){
             Customer customer = customerRepository.findById(id).get();
             customer.setActive(false);
             customerRepository.save(customer);
-            return customer;
+            return mappingService.mapEntityToDto(customer);
         }
         return null;
     }
 
     @Override
-    public List<Customer> findAll() {
+    public List<CustomerDTO> findAll() {
 
-        return customerRepository.findAll().stream().filter(Customer::isActive).toList();
+        return (customerRepository.findAll().stream().filter(Customer::isActive).map(mappingService::mapEntityToDto).toList());
     }
 }
