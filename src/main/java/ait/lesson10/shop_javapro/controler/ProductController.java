@@ -15,6 +15,12 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.List;
 
+//настройка уровня доступа к приложению
+//1. получение всех продуктов- доступна всем пользователям, включая не зарегистрированых
+//2. получение продуктов по id - доступна только пользователям зарегестрированным
+//3. добавление продукта в БД - доступно только администратору
+
+
 @RestController
 @RequestMapping("/products")
 @Tag(name= "Product controller", description = "controller for operations with products")

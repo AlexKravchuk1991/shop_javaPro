@@ -47,23 +47,17 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional
-    public CustomerDTO update(CustomerDTO customerDTO) {
+    public CustomerDTO update(Long id,CustomerDTO customerDTO) {
         if (customerDTO != null) {
-            Customer customer = mappingService.mapDtoToEntity(customerDTO);
-            customer=customerRepository.findById(customer.getId()).orElse(null);
-            if(customer!=null){
-                customer.setActive(true);
-                Customer updatedCustomer = customerRepository.save(customer);
-                return mappingService.mapEntityToDto(updatedCustomer);
+            Customer customer = customerRepository.findById(id).get();
+            Customer incomingCustomer = mappingService.mapDtoToEntity(customerDTO);
+            customer.setName(incomingCustomer.getName());
+            customer.setActive(true);
+            Customer updatedCustomer = customerRepository.save(customer);
+            return mappingService.mapEntityToDto(updatedCustomer);
             }
 
-
-
-        }
         return null;
-
-
-
     }
 
     @Override

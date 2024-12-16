@@ -43,7 +43,7 @@ public class CustomerController {
 
     @PutMapping("/{id}")
     public CustomerDTO updateCustomer(@PathVariable Long id, @RequestBody CustomerDTO customerDTO) {
-        return customerDTO;
+        return customerService.update(id, customerDTO);
     }
 
 

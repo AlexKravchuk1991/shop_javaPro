@@ -9,7 +9,7 @@ import java.util.List;
 public interface CustomerService {
     CustomerDTO save(CustomerDTO customerDTO);
     CustomerDTO findById(Long id);
-    CustomerDTO update(CustomerDTO customerDTO);
+    CustomerDTO update(Long id, CustomerDTO customerDTO);
     CustomerDTO delete(Long id);
     List<CustomerDTO> findAll();
 }
